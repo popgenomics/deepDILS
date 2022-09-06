@@ -10,6 +10,7 @@ from numpy import nanmean
 from numpy import std 
 from numpy import sum as somme
 from numpy import sqrt
+from numpy import power
 from scipy.stats import pearsonr
 from decimal import Decimal
 from collections import Counter
@@ -35,7 +36,7 @@ def stdCustom(liste, moyenne, longueurRegion):
 	# 'moyenne' = mean of ['liste' (size L) + longueurRegion x 0]
 	res = 0.0
 	for i in liste:
-		res += (i - moyenne)**2
+		res += power((i - moyenne), 2)
 	res /= longueurRegion
 	return(sqrt(res))
 
@@ -170,16 +171,16 @@ def tajimaD(nInd, pi, nS):
 		a1, a2 = 0.0, 0.0
 		for i in range(nInd-1):
 			a1 += 1.0/(i+1.0)
-			a2 += 1.0/((i+1)**2)
+			a2 += 1.0/power(i+1, 2)
 		# b1 and b2
 		b1 = (nInd + 1.0) / (3.0 * (nInd - 1.0))
-		b2 = 2.0 * (nInd**2 + nInd + 3.0) / (9.0*nInd * (nInd - 1.0))
+		b2 = 2.0 * (power(nInd, 2) + nInd + 3.0) / (9.0*nInd * (nInd - 1.0))
 		# c1 and c2
 		c1 = b1 - 1.0 / a1
-		c2 = b2 - (nInd + 2.0) / (a1 * nInd) + a2/(a1**2.0)
+		c2 = b2 - (nInd + 2.0) / (a1 * nInd) + a2/(power(a1, 2))
 		# e1 and e2
 		e1 = c1/a1
-		e2 = c2/(a1**2 + a2)
+		e2 = c2/(power(a1, 2) + a2)
 		# pi is assumed to already be: sum(pi over SNPs)/nCombination, let's compute thetaW
 		thetaW = nS / a1
 		# denominateur
@@ -265,9 +266,25 @@ def LD(haplotypes, positions_bin, width, min_width):
 			
 			D_tmp = f_a1_b1 - f_a1 * f_b1
 			D.append(D_tmp)
-			r_sqr.append(D_tmp**2 * 1/(f_a1 * (1-f_a1) * f_b1 * (1-f_b1)))
+			
+			denom = f_a1 * (1-f_a1) * f_b1 * (1-f_b1)
+			if denom==0:
+				r_sqr_tmp=nan
+			else:
+				r_sqr_tmp=power(D_tmp, 2)/denom
+			r_sqr.append(r_sqr_tmp)
 	
-	res = {'D':mean(D), 'r2':mean(r_sqr)}
+	if D.count(nan)==len(D):
+		D_mean=nan
+	else:
+		D_mean=nanmean(D)
+
+	if r_sqr.count(nan)==len(r_sqr):
+		r_sqr_mean=nan
+	else:
+		r_sqr_mean=nanmean(r_sqr)
+	
+	res = {'D':D_mean, 'r2':r_sqr_mean}
 	return(res)	
 
 def haploStats(haplotypes, bins, positions, width, min_width):
@@ -305,7 +322,7 @@ def haploStats(haplotypes, bins, positions, width, min_width):
 			if nHaplo <= 1: # if a single fixed haplotype
 				H1 = 1
 			else:
-				H1 = sum([ (count/nIndiv)**2 for count in haploCount.values() ])
+				H1 = sum([ power((count/nIndiv), 2) for count in haploCount.values() ])
 
 			# H12
 			## The haplotype homozygosity, only the two most common haplotypes are treated as one. Useful for looking for genetic sweeps.
@@ -317,7 +334,7 @@ def haploStats(haplotypes, bins, positions, width, min_width):
 				H12 = 1
 			else:
 				top_two_freq = [ count[1]/nIndiv for count in haploCount.most_common(2) ]
-				n1 = sum([ (count/nIndiv)**2 for count in haploCount.values() ])
+				n1 = sum([ power(count/nIndiv, 2) for count in haploCount.values() ])
 				p1 = top_two_freq[0]
 				p2 = top_two_freq[1]
 
@@ -332,7 +349,7 @@ def haploStats(haplotypes, bins, positions, width, min_width):
 				H2overH1 = nan
 			else:
 				most_frequent = haploCount.most_common(1)[0][1] / nIndiv
-				H2 = H1 - most_frequent**2
+				H2 = H1 - power(most_frequent, 2)
 				H2overH1 = H2/H1
 			
 			# LD

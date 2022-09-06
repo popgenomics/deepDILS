@@ -1,4 +1,6 @@
 require(tidyverse)
+require(ggpubr)
+#require(patchwork)
 
 posFile = '/home/croux/Programmes/pipeline_guillaume/example/sweep/test_positions.txt'
 statFile = '/home/croux/Programmes/pipeline_guillaume/example/sweep/test_sumStats.txt'
@@ -43,5 +45,7 @@ P_H2 = res %>% ggplot(aes(x=positions, y=H2)) + geom_point() + theme_calc(base_s
 P_H12 = res %>% ggplot(aes(x=positions, y=H12)) + geom_point() + theme_calc(base_size = 15) + ylab('H12')
 P_H2H1 = res %>% ggplot(aes(x=positions, y=H2overH1)) + geom_point() + theme_calc(base_size = 15) + ylab('H2/H1')
 
-ggarrange(P_pi, P_pi_std, P_thetaW, P_Taj, P_Y, P_nHaplo, P_D, P_r2, P_pearson_r, P_pearson_pval, P_H1, P_H2, P_H12, P_H2H1, align='hv', commond.legend=T, ncol=3, nrow=5)
+ggarrange(P_pi, P_pi_std, P_thetaW, P_Taj, P_Y, P_nHaplo, P_D, P_r2, P_pearson_r, P_pearson_pval, P_H1, P_H2, P_H12, P_H2H1, align='hv', commond.legend=T, ncol=3, nrow=5, labels='AUTO')
+#ggarrange(P_pi, P_pi_std, P_thetaW, P_Taj, P_Y, P_nHaplo,P_r2, P_pearson_r, P_H1, P_H2, P_H12, P_H2H1, align='hv', commond.legend=T, ncol=3, nrow=4, labels='AUTO')
 
+#(P_pi | P_pi_std | P_thetaW) / (P_Taj | P_Y | P_nHaplo) / (P_r2 | P_pearson_r | P_H1) / (P_H2 | P_H12 | P_H2H1)
