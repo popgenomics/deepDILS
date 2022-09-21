@@ -70,6 +70,13 @@ for iteration in 100 101; do
 	done
 done
 ```
+**nIndiv**: number of sampled gametes within the simulated population.  
+**nCombParam**: number of different combination of parameters with a single **ms** output file.  
+**nRep**: number of replicates for each of the different combination of parameters found within a single **ms** output file.    
+**regionSize**: size in bp of the simulated chromosome.  
+**width**: size of the sliding window in bp divided by **regionSize**. i.e, if *width=0.01* for *regionSize=100000*, then the actual window's width is 1kb.  
+**step**: step of the sliding window. Same unit as for **width**. i.e, if *step=0.005*, then the window slides with a step of 500bp.  
+**root**: root name used to write the different output files.  
   
 ### producing jpg for learning  
 In the _example_ subdirectory:  
@@ -79,10 +86,10 @@ for iteration in 100 101; do
 done
 ```
 **phasing**: to specify whether the data where phased or not. For phased data (*phasing=1*): statistics relative to LD are computed (*nHaplotypes, H1, H2, H12, H2 over H1, D, r2*).   
-*plotStats*: for only plotting jpg files used for machine learning (and not one additional plot per individual statistics) set *plotStats* to 0. If you want multiple jpg files: plotStats=1.  
-*datapath*: datapath of a directory with all *neutral* and *sweep* pairs of simulations.  
-*dpi*: resolution of the jpg files.  
-*theta*: specify the way we define the bounding box. If theta=1, then the bounding box is delimited by 4.N.mu. If theta=0, then the bounding box is delimited by the average pi calculated from the *neutral* simulation.  
+**plotStats**: for only plotting jpg files used for machine learning (and not one additional plot per individual statistics) set *plotStats* to 0. If you want multiple jpg files: plotStats=1.  
+**datapath**: datapath of a directory with all *neutral* and *sweep* pairs of simulations.  
+**dpi**: resolution of the jpg files.  
+**theta**: specify the way we define the bounding box. If *theta=1*, then the bounding box is delimited by 4.N.mu. If *theta=0*, then the bounding box is delimited by the average pi calculated from the **neutral** simulation.  
   
 ### main outputs  
 - 100_neutral_rawData.txt
@@ -102,8 +109,8 @@ done
 - 101_sweep_globalPic.txt
 - 101_sweep_globalPic.jpg
   
-jpg files correspond to simulated genomes.  
-txt files are associated to jpg files and correspond to coordinates of the box for YOLOv5 : object x_center y_center width height.  
+**jpg** files correspond to simulated genomes.  
+**txt** files are associated to jpg files and correspond to coordinates of the box for YOLOv5 : object x_center y_center width height.  
   
 #### globalPic  
 summary statistics along windows.  
