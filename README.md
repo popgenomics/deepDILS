@@ -104,8 +104,8 @@ theta: specify the way we define the bounding box. If theta=1, then the bounding
   
 jpg files correspond to simulated genomes.  
 txt files are associated to jpg files and correspond to coordinates of the box for YOLOv5 : object x_center y_center width height.  
-
-#### globalPic  
+  
+#### globalPic  
 summary statistics along windows.  
 ![Alt text](pictures/101_sweep_globalPic.jpg "global picture")
   
