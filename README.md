@@ -1,4 +1,5 @@
 # deepDILS
+## simplest illustrative example
 ```
 nIndividuals=40
 nReplicates=100
@@ -17,8 +18,8 @@ python3 ../scripts/msmscalc_onePop.py infile=output.ms nIndiv=$nIndividuals nCom
 ```
 Here, a sweep was simulated 100 times in the middle of a chromosome of 100-kb, sequenced in 40 sampled gametes.  
 ![Alt text](pictures/simulated_sweep.png "simulated sweep")
-
-
+  
+## in practice  
 With two simulated datasets using the Guillaume Lan-Fong's SLiM pipeline producing the following files:
 - 101_neutral_positions.txt  
 - 101_neutral_sumStats.txt  
@@ -49,7 +50,7 @@ With two simulated datasets using the Guillaume Lan-Fong's SLiM pipeline produci
 - 101_sweep_parameters.txt  
 - 101_sweep.trees  
 
-## calculating statistics in sliding windows  
+### calculating statistics in sliding windows  
 In the _example_ subdirectory:  
 ```
 cd example
@@ -61,7 +62,7 @@ for iteration in 100 101; do
 done
 ```
   
-## producing jpg for learning  
+### producing jpg for learning  
 In the _example_ subdirectory:  
 ```
 for iteration in 100 101; do
@@ -74,7 +75,7 @@ datapath: datapath of a directory with all *neutral* and *sweep* pairs of simula
 dpi: resolution of the jpg files.  
 theta: specify the way we define the bounding box. If theta=1, then the bounding box is delimited by 4.N.mu. If theta=0, then the bounding box is delimited by the average pi calculated from the *neutral* simulation.  
   
-## main outputs  
+### main outputs  
 - 100_neutral_rawData.txt
 - 100_neutral_rawData.jpg
 - 100_sweep_rawData.txt
@@ -94,6 +95,12 @@ theta: specify the way we define the bounding box. If theta=1, then the bounding
   
 jpg files correspond to simulated genomes.  
 txt files are associated to jpg files and correspond to coordinates of the box for YOLOv5 : object x_center y_center width height.  
-globalPic: summary statistics along windows.  
-rawData: simulated haplotypes.  
+
+#### globalPic
+summary statistics along windows.  
+![Alt text](pictures/101_sweep_globalPic.jpg "global picture")
+
+#### rawData
+simulated haplotypes.  
+![Alt text](pictures/101_sweep_rawData.jpg "raw data")
 
