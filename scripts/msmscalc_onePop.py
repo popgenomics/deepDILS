@@ -17,15 +17,43 @@ from collections import Counter
 
 minNumbSNP = 5 # statistics (pi, tajD, pearson's, etc ...) are only computed if a number of SNPs>= minNumbSNP is present within the studied fragment
 
-inputFileName = sys.argv[1] # contains the simulations in ms format
-nIndiv = int(sys.argv[2]) # number simulated individuals
-nCombParam = int(sys.argv[3]) # number of simulations (one simulation corresponds to one combination of param) for which statistics have to be calculated
-regionSize = int(sys.argv[4]) # length of the chromosome
-width = float(sys.argv[5]) # width = 0.1
-step = float(sys.argv[6]) # step = 0.05
-nRep = int(sys.argv[7]) # number of replicates of the same combination of parameters (nRep=1 for Guillaume)
-min_width = 0.1
-rootOutputFileName = sys.argv[8] 
+
+for arg in sys.argv:
+	arg = arg.split('=')
+	# name of the ms file
+	if arg[0] == 'infile':
+		inputFileName = arg[1]
+	# nIndiv: number of simulated sampled gametes
+	if arg[0] == 'nIndiv':
+		nIndiv = int(arg[1])
+	# nCombParam: number of combination of parameters in the file
+	if arg[0] == 'nCombParam':
+		nCombParam = int(arg[1])
+	# regionSize: length of the chromosome
+	if arg[0] == 'regionSize':
+		regionSize = int(arg[1])
+	# width: width of the sliding window 
+	if arg[0] == 'width':
+		width = float(arg[1])
+	# step: step of the sliding window 
+	if arg[0] == 'step':
+		step = float(arg[1])
+	# nRep: number of replicates of the same combination of parameters
+	if arg[0] == 'nRep':
+		nRep = int(arg[1])
+	# root: name root for outputs
+	if arg[0] == 'root':
+		rootOutputFileName = arg[1]
+
+# inputFileName = sys.argv[1] # contains the simulations in ms format
+# nIndiv = int(sys.argv[2]) # number simulated individuals
+# nCombParam = int(sys.argv[3]) # number of simulations (one simulation corresponds to one combination of param) for which statistics have to be calculated
+# regionSize = int(sys.argv[4]) # length of the chromosome
+# width = float(sys.argv[5]) # width = 0.1
+# step = float(sys.argv[6]) # step = 0.05
+# nRep = int(sys.argv[7]) # number of replicates of the same combination of parameters (nRep=1 for Guillaume)
+# min_width = 0.1
+# rootOutputFileName = sys.argv[8] 
 
 ##################
 # don't touch    #

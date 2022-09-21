@@ -4,6 +4,11 @@ require(ggpubr)
 
 posFile = '/home/croux/Programmes/pipeline_guillaume/example/sweep/test_positions.txt'
 statFile = '/home/croux/Programmes/pipeline_guillaume/example/sweep/test_sumStats.txt'
+posFile = '/home/croux/Programmes/pipeline_guillaume/example/septembre2022/101_sweep_positions.txt'
+statFile = '/home/croux/Programmes/pipeline_guillaume/example/septembre2022/101_sweep_sumStats.txt'
+
+statFile= '/home/croux/Programmes/pipeline_guillaume/example/septembre2022/14092022/101_sweep_sumStats.txt'
+posFile= '/home/croux/Programmes/pipeline_guillaume/example/septembre2022/14092022/101_sweep_positions.txt'
 L = 100000 # length of the chromosome in nucleotides
 
 ##################################################################################################################
