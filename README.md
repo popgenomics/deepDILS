@@ -78,11 +78,11 @@ for iteration in 100 101; do
 	python3 ../scripts/sim2box_single_YOLOv5.py dpi=300 datapath=$PWD simulation=${iteration} object=posSelection theta=0 phasing=1 plotStats=0
 done
 ```
-For phased data (phasing=1): statistics relative to LD are computed (nHaplotypes, H1, H2, H12, H2 over H1, D, r2).   
-For only plotting jpg files used for machine learning (and not one additional plot per individual statistics): plotStats=0. If you want multiple jpg files: plotStats=1.  
-datapath: datapath of a directory with all *neutral* and *sweep* pairs of simulations.  
-dpi: resolution of the jpg files.  
-theta: specify the way we define the bounding box. If theta=1, then the bounding box is delimited by 4.N.mu. If theta=0, then the bounding box is delimited by the average pi calculated from the *neutral* simulation.  
+*phasing*: to specify whether the data where phased or not. For phased data (*phasing=1*): statistics relative to LD are computed (*nHaplotypes, H1, H2, H12, H2 over H1, D, r2*).   
+*plotStats*: for only plotting jpg files used for machine learning (and not one additional plot per individual statistics) set *plotStats* to 0. If you want multiple jpg files: plotStats=1.  
+*datapath*: datapath of a directory with all *neutral* and *sweep* pairs of simulations.  
+*dpi*: resolution of the jpg files.  
+*theta*: specify the way we define the bounding box. If theta=1, then the bounding box is delimited by 4.N.mu. If theta=0, then the bounding box is delimited by the average pi calculated from the *neutral* simulation.  
   
 ### main outputs  
 - 100_neutral_rawData.txt
