@@ -1,3 +1,12 @@
+- [deepDILS](#deepdils)
+  * [simplest illustrative example](#simplest-illustrative-example)
+  * [in practice](#in-practice)
+    + [calculating statistics in sliding windows](#calculating-statistics-in-sliding-windows)
+    + [producing jpg for learning](#producing-jpg-for-learning)
+    + [main outputs](#main-outputs)
+      - [globalPic](#globalpic)
+      - [rawData](#rawdata)
+
 # deepDILS
 ## simplest illustrative example
 ```
