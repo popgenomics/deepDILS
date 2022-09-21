@@ -115,6 +115,21 @@ done
 #### globalPic  
 summary statistics along windows.  
 ![Alt text](pictures/101_sweep_globalPic.jpg "global picture")
+Eeach column is a window, and each row is a statistics with, from the bottom to the top:  
+- **pi (avg)**  
+- **pi (std)**  
+- **theta (avg)**  
+- **Tajima's D**
+- **Achaz's Y**  
+- **Pearson's r for pi**  
+- **Pearson's r pval for pi**   
+- **Number of haplotypes**
+- **Haplotype's homozygosity (H1)**  
+- **Haplotype's homozygosity without the most common haplotype (H2)**  
+- **Haplotype's homozygosity considering the two most common haplotype as the same one (H12)**  
+- **H2 over H1**  
+- **Linkage disequilibrium measured by D**  
+- **LD measured by r2**  
   
 #### rawData  
 simulated haplotypes.  
