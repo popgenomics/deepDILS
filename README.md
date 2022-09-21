@@ -13,8 +13,11 @@ window_step=0.005
 msms $nIndividuals $nReplicates -s $nSNPs -r $rho $length -SAA 200 -SaA 100 -SF 1e-2 -N 100000 -Sp 0.5 >output.ms
 
 # calculated statistics along chromosomes
-python3 msmscalc_onePop.py infile=output.ms nIndiv=$nIndividuals nCompParam=1 regionSize=$length width=$window_width step=$window_step nRep=$nReplicates root=outputStats
+python3 ../scripts/msmscalc_onePop.py infile=output.ms nIndiv=$nIndividuals nCombParam=1 regionSize=$length width=$window_width step=$window_step nRep=$nReplicates root=outputStats
 ```
+Here, a sweep was simulated 100 times in the middle of a chromosome of 100-kb, sequenced in 40 sampled gametes.  
+![Alt text](pictures/simulated_sweep.png "simulated sweep")
+
 
 With two simulated datasets using the Guillaume Lan-Fong's SLiM pipeline producing the following files:
 - 101_neutral_positions.txt  
