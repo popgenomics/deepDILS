@@ -44,7 +44,8 @@ for arg in sys.argv:
 		phasing=int(arg[1]) # 0: don't use the statistics associated to LD; 1: use the LD statistics
 	if arg[0] == 'plotStats':
 		plotStats=int(arg[1]) # 0: don't plot individual stats (pi.png, theta.png, etc....); 1: plots the individuals stats
-
+	if arg[0] == 'getAllData':
+		getAllData=int(arg[1]) # 0: in order to get the total range of stat. values, don't read all simulations but a reference table; 1: read all simulations and produce a reference table for standardization
 
 if isnan(dpi)==True:
 	print('\n\ta value of dpi has to be specified\n')
@@ -71,6 +72,14 @@ else:
 ## END OF TMP
 
 ## START OF FUNCTIONS
+def getRanges():
+	ranges_stats = {}
+	infile = open('range_stats.txt', 'r')
+	for line in infile:
+		tmp = line.strip().split(':')
+		ranges_stats[tmp[0]] = float(tmp[1].replace(' ', ''))
+	return(ranges_stats)
+
 def getSNP(snp, positions):
 	# function usefull for the rawdata
 	# it 1. gets the position of 'snp' within the vector 'positions'; 2. converts it in a float in [0,1]
@@ -93,7 +102,7 @@ def plot_globalPic(data, colormaps, vmin, vmax, iteration, model):
 #		fig.colorbar(psm, ax=ax)
 	pyplot.axis("off")
 	pyplot.savefig("{iteration}_{model}_globalPic.jpg".format(iteration=iteration, model=model), bbox_inches='tight', pad_inches = 0, dpi=dpi)
-	pyplot.close()
+	#pyplot.close()
 	gc.collect()
 	im = cv2.imread("{iteration}_{model}_globalPic.jpg".format(iteration=iteration, model=model))
 	res={}
@@ -236,7 +245,7 @@ def plotRawData_onlySNPs(tree, L, simulation_target, distances_target, colormaps
 	pyplot.axis("off")
 	pyplot.savefig('{iteration}_{model}_rawData.jpg'.format(iteration=simulation_target, model=model), bbox_inches='tight', pad_inches = 0, dpi=dpi)
 #	pyplot.show()
-	pyplot.close()
+#	pyplot.close()
 	gc.collect()
 	im = cv2.imread("{iteration}_{model}_rawData.jpg".format(iteration=simulation_target, model=model))
 	res={}
@@ -373,10 +382,13 @@ def getBoundaries(selected_pos, all_pos, pi_obs, pi_exp):
 ##### END OF FUNCTIONS ######
 
 ##### START TREATMENT OF DATA #####
-simulations = [ int(i.split('_')[0]) for i in os.listdir('./') if '.ms' in i ]
-simulations.sort()
-simulations = [ str(i) for i in simulations ]
-simulations = list(set(simulations))
+if getAllData == 1:
+	simulations = [ int(i.split('_')[0]) for i in os.listdir('./') if '.ms' in i ]
+	simulations.sort()
+	simulations = [ str(i) for i in simulations ]
+	simulations = list(set(simulations))
+else:
+	simulations = [simulation_target]
 
 param = getParameters(simulations)
 
@@ -445,34 +457,96 @@ r2_range = [ val for i in r2 for model in stats['stats'] for val in stats['stats
 
 
 # range (min, max) of summary statistics over all simulations
-min_pi = nanmin(pi_range)
-max_pi = nanmax(pi_range)
-min_pistd = nanmin(pistd_range)
-max_pistd = nanmax(pistd_range)
-min_theta = nanmin(theta_range)
-max_theta = nanmax(theta_range)
-min_tajD = nanmin(tajD_range)
-max_tajD = nanmax(tajD_range)
-min_achaz = nanmin(achaz_range)
-max_achaz = nanmax(achaz_range)
-min_pearsonR = nanmin(pearson_r_range)
-max_pearsonR = nanmax(pearson_r_range)
-min_pearsonP = nanmin(pearson_pval_range)
-max_pearsonP = nanmax(pearson_pval_range)
-min_nHaplo = nanmin(nHaplo_range)
-max_nHaplo = nanmax(nHaplo_range)
-min_H1 = nanmin(H1_range)
-max_H1 = nanmax(H1_range)
-min_H2 = nanmin(H2_range)
-max_H2 = nanmax(H2_range)
-min_H12 = nanmin(H12_range)
-max_H12 = nanmax(H12_range)
-min_H2overH1 = nanmin(H2overH1_range)
-max_H2overH1 = nanmax(H2overH1_range)
-min_D = nanmin(D_range)
-max_D = nanmax(D_range)
-min_r2 = nanmin(r2_range)
-max_r2 = nanmax(r2_range)
+if getAllData==1:
+	min_pi = nanmin(pi_range)
+	max_pi = nanmax(pi_range)
+	min_pistd = nanmin(pistd_range)
+	max_pistd = nanmax(pistd_range)
+	min_theta = nanmin(theta_range)
+	max_theta = nanmax(theta_range)
+	min_tajD = nanmin(tajD_range)
+	max_tajD = nanmax(tajD_range)
+	min_achaz = nanmin(achaz_range)
+	max_achaz = nanmax(achaz_range)
+	min_pearsonR = nanmin(pearson_r_range)
+	max_pearsonR = nanmax(pearson_r_range)
+	min_pearsonP = nanmin(pearson_pval_range)
+	max_pearsonP = nanmax(pearson_pval_range)
+	min_nHaplo = nanmin(nHaplo_range)
+	max_nHaplo = nanmax(nHaplo_range)
+	min_H1 = nanmin(H1_range)
+	max_H1 = nanmax(H1_range)
+	min_H2 = nanmin(H2_range)
+	max_H2 = nanmax(H2_range)
+	min_H12 = nanmin(H12_range)
+	max_H12 = nanmax(H12_range)
+	min_H2overH1 = nanmin(H2overH1_range)
+	max_H2overH1 = nanmax(H2overH1_range)
+	min_D = nanmin(D_range)
+	max_D = nanmax(D_range)
+	min_r2 = nanmin(r2_range)
+	max_r2 = nanmax(r2_range)
+	
+	outfile_range = open('range_stats.txt', 'w')
+	outfile_range.write('min_pi: {stat}\n'.format(stat=min_pi))
+	outfile_range.write('min_pistd: {stat}\n'.format(stat=min_pistd))
+	outfile_range.write('min_theta: {stat}\n'.format(stat=min_theta))
+	outfile_range.write('min_tajD: {stat}\n'.format(stat=min_tajD))
+	outfile_range.write('min_achaz: {stat}\n'.format(stat=min_achaz))
+	outfile_range.write('min_pearsonR: {stat}\n'.format(stat=min_pearsonR))
+	outfile_range.write('min_pearsonP: {stat}\n'.format(stat=min_pearsonP))
+	outfile_range.write('min_nHaplo: {stat}\n'.format(stat=min_nHaplo))
+	outfile_range.write('min_H1: {stat}\n'.format(stat=min_H1))
+	outfile_range.write('min_H2: {stat}\n'.format(stat=min_H2))
+	outfile_range.write('min_H12: {stat}\n'.format(stat=min_H12))
+	outfile_range.write('min_H2overH1: {stat}\n'.format(stat=min_H2overH1))
+	outfile_range.write('min_D: {stat}\n'.format(stat=min_D))
+	outfile_range.write('min_r2: {stat}\n'.format(stat=min_r2))
+	outfile_range.write('max_pi: {stat}\n'.format(stat=max_pi))
+	outfile_range.write('max_pistd: {stat}\n'.format(stat=max_pistd))
+	outfile_range.write('max_theta: {stat}\n'.format(stat=max_theta))
+	outfile_range.write('max_tajD: {stat}\n'.format(stat=max_tajD))
+	outfile_range.write('max_achaz: {stat}\n'.format(stat=max_achaz))
+	outfile_range.write('max_pearsonR: {stat}\n'.format(stat=max_pearsonR))
+	outfile_range.write('max_pearsonP: {stat}\n'.format(stat=max_pearsonP))
+	outfile_range.write('max_nHaplo: {stat}\n'.format(stat=max_nHaplo))
+	outfile_range.write('max_H1: {stat}\n'.format(stat=max_H1))
+	outfile_range.write('max_H2: {stat}\n'.format(stat=max_H2))
+	outfile_range.write('max_H12: {stat}\n'.format(stat=max_H12))
+	outfile_range.write('max_H2overH1: {stat}\n'.format(stat=max_H2overH1))
+	outfile_range.write('max_D: {stat}\n'.format(stat=max_D))
+	outfile_range.write('max_r2: {stat}\n'.format(stat=max_r2))
+	outfile_range.close()
+else:
+	ranges = getRanges()
+	min_pi = ranges['min_pi']
+	min_pistd = ranges['min_pistd']
+	min_theta = ranges['min_theta']
+	min_tajD = ranges['min_tajD']
+	min_achaz = ranges['min_achaz']
+	min_pearsonR = ranges['min_pearsonR']
+	min_pearsonP = ranges['min_pearsonP']
+	min_nHaplo = ranges['min_nHaplo']
+	min_H1 = ranges['min_H1']
+	min_H2 = ranges['min_H2']
+	min_H12 = ranges['min_H12']
+	min_H2overH1 = ranges['min_H2overH1']
+	min_D = ranges['min_D']
+	min_r2 = ranges['min_r2']
+	max_pi = ranges['max_pi']
+	max_pistd = ranges['max_pistd']
+	max_theta = ranges['max_theta']
+	max_tajD = ranges['max_tajD']
+	max_achaz = ranges['max_achaz']
+	max_pearsonR = ranges['max_pearsonR']
+	max_pearsonP = ranges['max_pearsonP']
+	max_nHaplo = ranges['max_nHaplo']
+	max_H1 = ranges['max_H1']
+	max_H2 = ranges['max_H2']
+	max_H12 = ranges['max_H12']
+	max_H2overH1 = ranges['max_H2overH1']
+	max_D = ranges['max_D']
+	max_r2 = ranges['max_r2']
 
 # range (min, max) of distances between 3 SNPs over all simulations
 min_distance = nanmin(distances_all)
