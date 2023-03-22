@@ -108,6 +108,8 @@ def plot_globalPic(data, colormaps, vmin, vmax, iteration, model):
 	res={}
 	res['width'] = im.shape[1]
 	res['height'] = im.shape[0]
+#	print(data)
+	np.savetxt("{iteration}_{model}_globalPic_matrix.txt".format(iteration=iteration, model=model), data, fmt='%.5f')
 	return(res)
 #	pyplot.show()
 
