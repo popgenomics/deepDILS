@@ -28,6 +28,7 @@ dpi=nan
 datapath=nan
 simulation_target=nan
 object_to_recognize=nan
+modelSim='both'
 for arg in sys.argv:
 	arg = arg.split('=')
 	if arg[0] == 'dpi':
@@ -46,6 +47,8 @@ for arg in sys.argv:
 		plotStats=int(arg[1]) # 0: don't plot individual stats (pi.png, theta.png, etc....); 1: plots the individuals stats
 	if arg[0] == 'getAllData':
 		getAllData=int(arg[1]) # 0: in order to get the total range of stat. values, don't read all simulations but a reference table; 1: read all simulations and produce a reference table for standardization
+	if arg[0] == 'modelSim':
+		modelSim=arg[1] # both: neutral and sweep; neutral: neutral; sweep: sweep
 
 if isnan(dpi)==True:
 	print('\n\ta value of dpi has to be specified\n')
@@ -69,6 +72,16 @@ if object_to_recognize=='neutral':
 else:
 	if object_to_recognize=='posSelection':
 		object_to_recognize=1	
+
+
+if modelSim=='both':
+	liste_models = ['sweep', 'neutral']
+else:
+	if modelSim=='neutral':
+		liste_models=['neutral']
+	else:
+		liste_models=['sweep']
+
 ## END OF TMP
 
 ## START OF FUNCTIONS
@@ -153,9 +166,14 @@ def readTrees(simulation_target):
 	return(res)
 
 
-def readMS(simulation_target):
-	res = {'sweep':{}, 'neutral':{}}
-	for model_tmp in ['sweep', 'neutral']:
+def readMS(simulation_target, liste_models):	
+	res = {}
+	for model_tmp in liste_models:
+		res[model_tmp] = {}
+	
+#	res = {'sweep':{}, 'neutral':{}}
+#	for model_tmp in ['sweep', 'neutral']:
+	for model_tmp in liste_models:
 		infile = open('{simulation}_{model}.ms'.format(simulation=simulation_target, model=model_tmp), 'r')
 		test = 0
 		for line in infile:
@@ -256,12 +274,18 @@ def plotRawData_onlySNPs(tree, L, simulation_target, distances_target, colormaps
 	return(res)
 
 
-def readStats(simulations, L):
-	res = {'sweep':{}, 'neutral':{}}
-	distances = {'sweep':{}, 'neutral':{}}
+def readStats(simulations, L, liste_models):
+	#res = {'sweep':{}, 'neutral':{}}
+	res = {}
+	#distances = {'sweep':{}, 'neutral':{}}
+	distances = {}
+	for model_tmp in liste_models:
+		res[model_tmp] = {}
+		distances[model_tmp] = {}
 	tree = {}
 	for iteration_tmp in range(len(simulations)):
-		for model_tmp in ['sweep', 'neutral']:
+#		for model_tmp in ['sweep', 'neutral']:
+		for model_tmp in liste_models:
 			# summary statistics
 			infile = open('{simulation}_{model}_sumStats.txt'.format(simulation=simulations[iteration_tmp], model=model_tmp), 'r')
 			line_tmp = infile.readline().strip().split('\t')
@@ -282,8 +306,9 @@ def readStats(simulations, L):
 			# positions of SNPs
 #			tree = readTrees(simulation_target=simulations[iteration_tmp])
 
-		tree[simulations[iteration_tmp]] = readMS(simulation_target=simulations[iteration_tmp])
-		for model_tmp in ['sweep', 'neutral']:
+		tree[simulations[iteration_tmp]] = readMS(simulation_target=simulations[iteration_tmp], liste_models=liste_models)
+#		for model_tmp in ['sweep', 'neutral']:
+		for model_tmp in liste_models:
 #			distances[model_tmp][iteration_tmp] = get_distances(tree_tmp[model_tmp]['positions'])
 			distances[model_tmp][iteration_tmp] = [ tree[simulations[iteration_tmp]][model_tmp]['positions'][i]-tree[simulations[iteration_tmp]][model_tmp]['positions'][i-1] for i in range(1, len(tree[simulations[iteration_tmp]][model_tmp]['positions']), 1) ]
 	
@@ -309,16 +334,17 @@ def getSelectedPosition(simulations, L, simulation_target):
 			infile.close()
 	return(res)
 
-def getParameters(simulations):
+def getParameters(simulations, liste_models):
 	# simulations = [ list of IDs of all simulations within the datapath/ ]
 	list_non_numerical_parameters = ['sim_id', 'outcome']
 	list_non_numerical_values = ['NF']
 
 	res = {}
-	
+
+	model = liste_models[0]	
 	for iteration_tmp in simulations:
 		res[iteration_tmp] = {}
-		infile = open('{0}_sweep_parameters.txt'.format(iteration_tmp), 'r')
+		infile = open('{0}_{1}_parameters.txt'.format(iteration_tmp, model), 'r')
 		
 		line = infile.readline()
 		header = {}
@@ -331,7 +357,10 @@ def getParameters(simulations):
 		line = line.strip().split('\t')
 		for i in range(cnt):
 			if header[i] not in list_non_numerical_parameters and line[i] not in list_non_numerical_values:
-				value_tmp = float(line[i])
+				if line[i] != '-':
+					value_tmp = float(line[i])
+				else:
+					value_tmp = line[i]
 			else:
 				value_tmp = line[i]
 			res[iteration_tmp][header[i]] = value_tmp
@@ -385,22 +414,30 @@ def getBoundaries(selected_pos, all_pos, pi_obs, pi_exp):
 
 ##### START TREATMENT OF DATA #####
 if getAllData == 1:
-	simulations = [ int(i.split('_')[0]) for i in os.listdir('./') if '.ms' in i ]
+	list_simulations = [ i.split('.')[0].replace('_neutral', '').replace('_sweep', '') for i in os.listdir('./') if '.ms' in i ]
+	simulations = list(set(list_simulations))
 	simulations.sort()
-	simulations = [ str(i) for i in simulations ]
-	simulations = list(set(simulations))
+#	simulations = [ int(i.split('_')[0]) for i in os.listdir('./') if '.ms' in i ]
+#	simulations.sort()
+#	simulations = [ str(i) for i in simulations ]
+#	simulations = list(set(simulations))
 else:
 	simulations = [simulation_target]
 
-param = getParameters(simulations)
+param = getParameters(simulations=simulations, liste_models=liste_models)
 
 L = param[simulation_target]['L']
 Ne = param[simulation_target]['NeA']
 mu = param[simulation_target]['mu']
 
 # get positions: positions are produced by mscalc, corresponds to the mid SNP within each window
-positions = {'sweep':[], 'neutral':[]}
-for model_tmp in ['sweep', 'neutral']:
+#positions = {'sweep':[], 'neutral':[]}
+positions = {}
+for model_tmp in liste_models:
+	positions[model_tmp] = []
+
+#for model_tmp in ['sweep', 'neutral']:
+for model_tmp in liste_models:
 	infile = open('{simulation}_{model}_positions.txt'.format(simulation=simulation_target, model=model_tmp), 'r')
 	tmp = infile.readline()
 	tmp = infile.readline().strip().split('\t')
@@ -412,7 +449,7 @@ if object_to_recognize == 1:
 	selected_positions = param[simulation_target]['mut_pos']
 
 # get stats
-stats = readStats(simulations, L)
+stats = readStats(simulations, L, liste_models=liste_models)
 
 # get all distances
 distances_all = [ val for model in stats['distances'] for i in stats['distances'][model] for val in stats['distances'][model][i] ]
@@ -566,7 +603,8 @@ iteration = [ i for i in range(len(simulations)) if simulations[i]==simulation_t
 # PLOTS #
 #########
 distances_target = {}
-models = ['sweep', 'neutral']
+#models = ['sweep', 'neutral']
+models = liste_models
 
 for model in models:
 	x_tmp = positions[model]
@@ -663,7 +701,8 @@ for model in models:
 	del data
 
 # get coordinates in pixel
-for model_tmp in ['sweep', 'neutral']:
+#for model_tmp in ['sweep', 'neutral']:
+for model_tmp in liste_models:
 	x_tmp = positions[model_tmp]
 	
 #	if object_to_recognize==1:
@@ -674,7 +713,10 @@ for model_tmp in ['sweep', 'neutral']:
 		if theta==1:
 			pi_exp = 4*Ne*mu*scalar
 		else:
-			pi_exp = nanmean([ stats['stats']['neutral'][i][iteration] for i in pi ])
+			if 'neutral' in liste_models:
+				pi_exp = nanmean([ stats['stats']['neutral'][i][iteration] for i in pi ])
+			else:
+				pi_exp = nanmean([ stats['stats']['sweep'][i][iteration] for i in pi ])
 
 		y_tmp_pi = [ stats['stats'][model_tmp][i][iteration] for i in pi ] # values
 
@@ -715,7 +757,8 @@ for model_tmp in ['sweep', 'neutral']:
 
 
 # RAW DATA
-for model_tmp in ['sweep', 'neutral']:
+#for model_tmp in ['sweep', 'neutral']:
+for model_tmp in liste_models:
 #	tree = readMS(simulation_target=simulation_target) 
 	tree = stats['MS'][simulations[iteration]][model_tmp]
 #	dimensions_rawData = plotRawData_onlySNPs(tree=tree, L=L, simulation_target=simulation_target, distances_target=distances_target, colormaps=[binary])
@@ -727,7 +770,10 @@ for model_tmp in ['sweep', 'neutral']:
 		if theta==1:
 			pi_exp = 4*Ne*mu*scalar
 		else:
-			pi_exp = nanmean([ stats['stats']['neutral'][i][iteration] for i in pi ])
+			if 'neutral' in liste_models:
+				pi_exp = nanmean([ stats['stats']['neutral'][i][iteration] for i in pi ])
+			else:
+				pi_exp = nanmean([ stats['stats']['sweep'][i][iteration] for i in pi ])
 		
 		xmin_xmax = getBoundaries(selected_pos = target, all_pos = x_tmp, pi_obs = y_tmp_pi, pi_exp = pi_exp)
 		center_global = selected_positions/L

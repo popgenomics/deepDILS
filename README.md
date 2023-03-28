@@ -82,11 +82,11 @@ done
 In the _example_ subdirectory:  
 ```
 # go through all simulated datasets a first time, in order to get the range of variation for each stat : getAllData=1  
-python3 ../scripts/sim2box_single_YOLOv5.py dpi=300 datapath=$PWD simulation=100 object=posSelection theta=0 phasing=1 plotStats=0 getAllData=1 &
+python3 ../scripts/sim2box_single_YOLOv5.py dpi=300 datapath=$PWD simulation=100 object=posSelection theta=0 phasing=1 plotStats=0 getAllData=1 modelSim=both &
 
 # can then be run independently for all simulated datasets: getAllData=0  
-for iteration in 100 101; do
-	python3 ../scripts/sim2box_single_YOLOv5.py dpi=300 datapath=$PWD simulation=${iteration} object=posSelection theta=0 phasing=1 plotStats=0 getAllData=0 &
+for iteration in $(ls *.ms | cut -d "." -f1 | sed "s/_neutral//g" | sed "s/_sweep//g" | sort | uniq); do
+	python3 ../scripts/sim2box_single_YOLOv5.py dpi=300 datapath=$PWD simulation=${iteration} object=posSelection theta=0 phasing=1 plotStats=0 getAllData=0 modelSim=both &
 done
 ```
 **phasing**: to specify whether the data where phased or not. For phased data (*phasing=1*): statistics relative to LD are computed (*nHaplotypes, H1, H2, H12, H2 over H1, D, r2*).   
@@ -94,7 +94,8 @@ done
 **datapath**: datapath of a directory with all *neutral* and *sweep* pairs of simulations.  
 **dpi**: resolution of the jpg files.  
 **theta**: specify the way we define the bounding box. If *theta=1*, then the bounding box is delimited by 4.N.mu. If *theta=0*, then the bounding box is delimited by the average pi calculated from the **neutral** simulation.  
-  
+**modelSim**: specify whether the simulated models are **sweep** (only simulations with selective sweep), **neutral** (only simulations without sweeps) or **both** (with both **sweep.ms** and **neutral.ms** files in the directory)
+    
 ### main outputs  
 - 100_neutral_rawData.txt
 - 100_neutral_rawData.jpg
