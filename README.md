@@ -3,6 +3,7 @@
   * [in practice](#in-practice)
     + [calculating statistics in sliding windows](#calculating-statistics-in-sliding-windows)
     + [producing jpg for learning](#producing-jpg-for-learning)
+    + [from multiple subdirectories](#from-multiple-subdirectories)
     + [main outputs](#main-outputs)
       - [globalPic](#globalpic)
       - [rawData](#rawdata)
@@ -95,7 +96,20 @@ done
 **dpi**: resolution of the jpg files.  
 **theta**: specify the way we define the bounding box. If *theta=1*, then the bounding box is delimited by 4.N.mu. If *theta=0*, then the bounding box is delimited by the average pi calculated from the **neutral** simulation.  
 **modelSim**: specify whether the simulated models are **sweep** (only simulations with selective sweep), **neutral** (only simulations without sweeps) or **both** (with both **sweep.ms** and **neutral.ms** files in the directory)
-    
+  
+### from multiple subdirectories
+Get a list of _range_stats.txt_ files located in different subdirectories, from the main directory:  
+```
+find . -name "range_stats.txt" > list_ranges.txt
+```
+   
+Then execute _global_ranges.py_:  
+```
+python3 global_ranges.py list_ranges.txt
+```
+  
+You can replace the _range_stats.txt_ files located in different subdirectories by the 'consensus' file produced by _global_ranges.py_.  
+   
 ### main outputs  
 - 100_neutral_rawData.txt
 - 100_neutral_rawData.jpg
