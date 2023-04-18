@@ -15,7 +15,7 @@ from scipy.stats import pearsonr
 from decimal import Decimal
 from collections import Counter
 
-minNumbSNP = 5 # statistics (pi, tajD, pearson's, etc ...) are only computed if a number of SNPs>= minNumbSNP is present within the studied fragment
+minNumbSNP = 0 # statistics (pi, tajD, pearson's, etc ...) are only computed if a number of SNPs>= minNumbSNP is present within the studied fragment
 
 
 for arg in sys.argv:
@@ -194,7 +194,8 @@ def tajimaD(nInd, pi, nS):
 	# nS = number of SNPs within the alignment
 	# a1 and a2
 	if nS < minNumbSNP:
-		return([nan, nan])
+#		return([nan, nan])
+		return([0, 0])
 	else:
 		a1, a2 = 0.0, 0.0
 		for i in range(nInd-1):
@@ -227,7 +228,8 @@ def achazY(n, kxy):
 	singletons = [ i for i in kxy if i==(n-1) ]
 	nSingletons = len(kxy)
 	if nSingletons < minNumbSNP: # if less than minNumbSNP of SNPs are present in the alignement --> return "nan" value
-		return(nan)
+#		return(nan)
+		return(0)
 	else:
 		an = 0.0
 		bn = 0.0
@@ -303,12 +305,14 @@ def LD(haplotypes, positions_bin, width, min_width):
 			r_sqr.append(r_sqr_tmp)
 	
 	if D.count(nan)==len(D):
-		D_mean=nan
+#		D_mean=nan
+		D_mean=1
 	else:
 		D_mean=nanmean(D)
 
 	if r_sqr.count(nan)==len(r_sqr):
-		r_sqr_mean=nan
+#		r_sqr_mean=nan
+		r_sqr_mean=1
 	else:
 		r_sqr_mean=nanmean(r_sqr)
 	
@@ -435,8 +439,9 @@ def calc_window(rep, nRep, bins, regionSize, nIndiv, totalData, min_width):
 	#		meanPi_tmp.append(mean(bins_tmp[i][j]['pi']) / size_tmp)
 			meanPi_tmp.append(sum(bins_tmp[i][j]['kxy']) /(1.0 * nPairwiseComp)) # sum(Kxy over comparisons at a SNP) / number_pairwise_comparison 
 			stdPi_tmp.append(stdCustom(bins_tmp[i][j]['kxy'], meanPi_tmp[j], regionSize))
-			if len(bins_tmp[i][j]['positions'])<minNumbSNP:
-				pearson = [nan, nan]
+			if len(bins_tmp[i][j]['positions'])<2:
+#				pearson = [nan, nan]
+				pearson = [1, 1]
 			else:
 				pearson = pearsonr(bins_tmp[i][j]['positions'], bins_tmp[i][j]['kxy'])
 			pearsonR_tmp.append(pearson[0])
@@ -466,17 +471,20 @@ def calc_window(rep, nRep, bins, regionSize, nIndiv, totalData, min_width):
 			res[i]['pi_std'] = round(nanmean(stdPi_tmp)/size_tmp, 5)
 		
 		if pearsonR_tmp.count(nan)==len(pearsonR_tmp) or pearsonR_tmp.count('nan')==len(pearsonR_tmp):
-			res[i]['pearson_r'] = nan
+#			res[i]['pearson_r'] = nan
+			res[i]['pearson_r'] = 1
 		else:
 			res[i]['pearson_r'] = round(nanmean(pearsonR_tmp), 5)
 		
 		if pearsonPval_tmp.count(nan)==len(pearsonPval_tmp):
-			res[i]['pearson_pval'] = nan
+#			res[i]['pearson_pval'] = nan
+			res[i]['pearson_pval'] = 0
 		else:
 			res[i]['pearson_pval'] = round(nanmean(pearsonPval_tmp), 5)
 		
 		if tajimaD_tmp.count(nan)==len(tajimaD_tmp):
-			res[i]['tajD'] = nan
+#			res[i]['tajD'] = nan
+			res[i]['tajD'] = 0
 		else:
 			res[i]['tajD'] = round(nanmean(tajimaD_tmp), 5)
 
@@ -496,32 +504,43 @@ def calc_window(rep, nRep, bins, regionSize, nIndiv, totalData, min_width):
 			res[i]['nHaplo'] = round(nanmean(nHaplo_tmp), 5)
 		
 		if H1_tmp.count(nan)==len(H1_tmp):
-			res[i]['H1'] = nan
+#			res[i]['H1'] = nan
+#			if no SNP : assuming H1 = 1
+			res[i]['H1'] = 1
 		else:
 			res[i]['H1'] = round(nanmean(H1_tmp), 5)
 		
 		if H2_tmp.count(nan)==len(H2_tmp):
-			res[i]['H2'] = nan
+#			res[i]['H2'] = nan
+#			if no SNP : assuming H2 = 0
+			res[i]['H2'] = 0
 		else:
 			res[i]['H2'] = round(nanmean(H2_tmp), 5)
 		
 		if H12_tmp.count(nan)==len(H12_tmp):
-			res[i]['H12'] = nan
+#			res[i]['H12'] = nan
+#			if no SNP : assuming H12 = 1
+			res[i]['H12'] = 1
 		else:
 			res[i]['H12'] = round(nanmean(H12_tmp), 5)
 		
 		if H2overH1_tmp.count(nan)==len(H2overH1_tmp):
-			res[i]['H2overH1'] = nan
+#			res[i]['H2overH1'] = nan
+#			if no SNP : assuming H2/H1 = 0
+			res[i]['H2overH1'] = 0
 		else:
 			res[i]['H2overH1'] = round(nanmean(H2overH1_tmp), 5)
 		
 		if D_tmp.count(nan)==len(D_tmp):
-			res[i]['D'] = nan
+#			res[i]['D'] = nan
+#			if no SNP : assuming LD = 1
+			res[i]['D'] = 1
 		else:
 			res[i]['D'] = round(nanmean(D_tmp), 5)
 		
 		if r2_tmp.count(nan)==len(r2_tmp):
-			res[i]['r2'] = nan
+#			res[i]['r2'] = nan
+			res[i]['r2'] = 1
 		else:
 			res[i]['r2'] = round(nanmean(r2_tmp), 5)
 		
