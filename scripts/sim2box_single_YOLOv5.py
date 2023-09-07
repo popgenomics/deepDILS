@@ -29,10 +29,13 @@ datapath=nan
 simulation_target=nan
 object_to_recognize=nan
 modelSim='both'
+target_res=nan
 for arg in sys.argv:
 	arg = arg.split('=')
 	if arg[0] == 'dpi':
 		dpi=int(arg[1]) # dpi = 300
+	if arg[0] == 'target_res':
+		target_res=int(arg[1]) # target_res = 512; pictures will have a size of 512x512 pixels
 	if arg[0] == 'datapath':
 		datapath=arg[1] # datapath='/home/croux/Programmes/yolo_box/simulations'
 	if arg[0] == 'simulation':
@@ -52,6 +55,10 @@ for arg in sys.argv:
 
 if isnan(dpi)==True:
 	print('\n\ta value of dpi has to be specified\n')
+	print(help_message)
+	sys.exit(-1)
+if isnan(target_res)==True:
+	print('\n\ta value of target_res has to be specified\n')
 	print(help_message)
 	sys.exit(-1)
 if isnull(datapath)==True:
@@ -103,13 +110,13 @@ def getSNP(snp, positions):
 	
 	return(closest_snp / (1.0*len(positions)))
 
-def plot_globalPic(data, colormaps, vmin, vmax, iteration, model):
+def plot_globalPic(data, colormaps, vmin, vmax, iteration, model, dpi, target_res):
 	"""
 	Helper function to plot data with associated colormap.
 	"""
 #	data = np.random.randn(30, 30)
 	n = len(colormaps)
-	fig, axs = pyplot.subplots(1, n, figsize=(n * 2 + 2, 3), constrained_layout=True, squeeze=False)
+	fig, axs = pyplot.subplots(1, n, figsize=(target_res/dpi, target_res/dpi), constrained_layout=True, squeeze=False)
 	for [ax, cmap] in zip(axs.flat, colormaps):
 		psm = ax.pcolormesh(data, cmap=cmap, rasterized=True, vmin=vmin, vmax=vmax)
 #		fig.colorbar(psm, ax=ax)
@@ -239,7 +246,7 @@ def plotRawData_fullLength(tree, L, simulation_target, colormaps):
 	gc.collect()
 	
 	
-def plotRawData_onlySNPs(tree, L, simulation_target, distances_target, colormaps, model):
+def plotRawData_onlySNPs(tree, L, simulation_target, distances_target, colormaps, model, dpi, target_res):
 	# tree: output of readTrees; a dictionnary containing tree['positions'] and tree['sequences']
 	# L: length of the simulated chromosome
 	# simulation_target: ID of the simulation {simulation_target]_sumStats.txt for instance
@@ -258,7 +265,8 @@ def plotRawData_onlySNPs(tree, L, simulation_target, distances_target, colormaps
 	vmin=0
 	vmax=1
 	n = len(colormaps)
-	fig, axs = pyplot.subplots(1, n, figsize=(n * 2 + 2, 3), constrained_layout=True, squeeze=False)
+#	fig, axs = pyplot.subplots(1, n, figsize=(n * 2 + 2, 3), constrained_layout=True, squeeze=False)
+	fig, axs = pyplot.subplots(1, n, figsize=(target_res/dpi, target_res/dpi), constrained_layout=True, squeeze=False)
 	for [ax, cmap] in zip(axs.flat, colormaps):
 		psm = ax.pcolormesh(data, cmap=cmap, rasterized=True, vmin=vmin, vmax=vmax)
 #		fig.colorbar(psm, ax=ax)
@@ -697,7 +705,7 @@ for model in models:
 		data[12] = [ (stats['stats'][model][i][iteration]-min_D)/(max_D-min_D) for i in D ] # achaz
 		data[13] = [ (stats['stats'][model][i][iteration]-min_r2)/(max_r2-min_r2) for i in r2 ] # achaz
 
-	dimensions_globalPic = plot_globalPic(data, [binary], 0, 1, simulations[iteration], model=model) # [width; height] in pixels
+	dimensions_globalPic = plot_globalPic(data, [binary], 0, 1, simulations[iteration], model=model, dpi=dpi, target_res=target_res) # [width; height] in pixels
 	del data
 
 # get coordinates in pixel
@@ -762,7 +770,7 @@ for model_tmp in liste_models:
 #	tree = readMS(simulation_target=simulation_target) 
 	tree = stats['MS'][simulations[iteration]][model_tmp]
 #	dimensions_rawData = plotRawData_onlySNPs(tree=tree, L=L, simulation_target=simulation_target, distances_target=distances_target, colormaps=[binary])
-	dimensions_rawData = plotRawData_onlySNPs(tree=tree, L=L, simulation_target=simulation_target, distances_target=distances_target[model_tmp], colormaps=[binary], model=model_tmp)
+	dimensions_rawData = plotRawData_onlySNPs(tree=tree, L=L, simulation_target=simulation_target, distances_target=distances_target[model_tmp], colormaps=[binary], model=model_tmp, dpi=dpi, target_res=target_res)
 #	if object_to_recognize == 1:
 	if model_tmp == 'sweep':
 		x_tmp = positions[model_tmp]
