@@ -154,7 +154,7 @@ Eeach column is a window, and each row is a statistics with, from the bottom to 
 #### rawData  
 simulated haplotypes.  
 ![Alt text](pictures/101_sweep_rawData.jpg "raw data")
-
+  
     
 ## Simulations using the msms pipeline  
 ```
