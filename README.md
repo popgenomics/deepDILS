@@ -7,6 +7,7 @@
     + [main outputs](#main-outputs)
       - [globalPic](#globalpic)
       - [rawData](#rawdata)
+  * [Simulations using the msms pipeline](#simulations-using-the-msms-pipeline)
 
 # deepDILS
 ## simplest illustrative example
@@ -153,4 +154,31 @@ Eeach column is a window, and each row is a statistics with, from the bottom to 
 #### rawData  
 simulated haplotypes.  
 ![Alt text](pictures/101_sweep_rawData.jpg "raw data")
+  
+## Simulations using the msms pipeline
+```
+binpath=/home/croux/Programmes/deepDILS/scripts/dev
+# rootname of the output file
+outfile=exp_123
+# number of sequenced gametes
+n=20
+# chromosome length
+L=100000
+# number of polymorphic sites
+S=2000
+
+# STEP BY STEP
+## simulations
+python3 ${binpath}/submit_msms.py  -n ${n} -S ${S} -r 1e-8 -L ${L} -Sp 20000 -s 0.001 -fA 0.01 -Nc 100000 -Na 10000 -m 0 -Ts 100000 -Td 25000 -Tsel 20000 -output ${outfile}.msms
+
+## get trajectory of the advantageous allele
+python3 ${binpath}/get_msms_trajectory.py --infile ${outfile}.msms --outfile ${outfile}.trajectory
+
+## compute summary statistics
+python3 ${binpath}/msmscalc_onePop_sort_haplo.py --infile ${outfile}.msms --nIndiv ${n} --nCombParam 1 --regionSize ${L} --width 0.1 --step 0.05 --nRep 1 --root CST_0
+
+# THE WHOLE PIPELINE IN ONCE
+python3 ${binpath}/launch_pipeline_msms.py --outfile ${outfile} --model EXP -n ${n} -S ${S} -L ${L} -r 2e-6 -fA 0.01
+```
+
 
