@@ -78,15 +78,15 @@ max_attempts = 10
 attempt = 0
 
 while attempt < max_attempts:
-	print('attempt #{0}'.format(attempt+1))
+	print('\tattempt #{0}'.format(attempt+1))
 	return_code = os.system(command_line)
 
 	if return_code == 0:
-		print('\tsimulation successfully performed')
+		print('\t\tsimulation successfully performed')
 		break
 	else:
 		attempt += 1
-		print('\tsimulation failed')
+		print('\t\tsimulation failed')
 
 if attempt == max_attempts:
 	print('\n\tSimulation failed after 10 attempts')

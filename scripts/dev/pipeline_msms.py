@@ -8,22 +8,22 @@ def run_simulation(outfile, n, S, r, L, Sp, s, fA, Nc, Na, m, Ts, Td, Tsel, widt
 	# simulations
 	command = 'python3 {binpath}/submit_msms.py  -n {n} -S {S} -r {r} -L {L} -Sp {Sp} -s {s} -fA {fA} -Nc {Nc} -Na {Na} -m {m} -Ts {Ts} -Td {Td} -Tsel {Tsel} -output {outfile}.msms'.format(
 		binpath=binpath, n=n, S=S, r=r, L=L, Sp=Sp, s=s, fA=fA, Nc=Nc, Na=Na, m=m, Ts=Ts, Td=Td, Tsel=Tsel, outfile=outfile)
-	print('Simulations:')
-	print(command)
+	print('\tSimulations:')
+	print('\t' + command)
 	os.system(command)
 
 	# get trajectory of the advantageous allele
 	command = 'python3 {binpath}/get_msms_trajectory.py --infile {outfile}.msms --outfile {outfile}.trajectory'.format(
 		binpath=binpath, outfile=outfile)
-	print('\nGet trajectory of selected mutation:')
-	print(command)
+	print('\n\tGet trajectory of selected mutation:')
+	print('\t' + command)
 	os.system(command)
 
 	# compute summary statistics
 	command = 'python3 {binpath}/msmscalc_onePop_sort_haplo.py --infile {outfile}.msms --nIndiv {n} --nCombParam 1 --regionSize {L} --width {width} --step {step} --nRep 1 --root {outfile}'.format(
 		binpath=binpath, outfile=outfile, n=n, L=L, width=width, step=step)
-	print('\nCompute summary statistics:')
-	print(command)
+	print('\n\tCompute summary statistics:')
+	print('\t' + command)
 	os.system(command)
 
 
