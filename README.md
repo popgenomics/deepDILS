@@ -7,7 +7,7 @@
     + [main outputs](#main-outputs)
       - [globalPic](#globalpic)
       - [rawData](#rawdata)
-  * [Simulations using the msms pipeline](#simulations-using-the-msms-pipeline)
+  * [msms pipeline](#msms-pipeline)
 
 # deepDILS
 ## simplest illustrative example
@@ -155,8 +155,7 @@ Eeach column is a window, and each row is a statistics with, from the bottom to 
 simulated haplotypes.  
 ![Alt text](pictures/101_sweep_rawData.jpg "raw data")
   
-    
-## Simulations using the msms pipeline  
+## msms pipeline  
 ```
 binpath=/home/croux/Programmes/deepDILS/scripts/dev
 # rootname of the output file
