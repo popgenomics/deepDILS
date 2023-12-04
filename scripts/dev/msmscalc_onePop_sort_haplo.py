@@ -18,6 +18,7 @@ from typing import Dict, List, Any
 import argparse
 
 minNumbSNP = 0 # statistics (pi, tajD, pearson's, etc ...) are only computed if a number of SNPs>= minNumbSNP is present within the studied fragment
+width_sort = 20 # width of haplotypic fragments in #SNPs to sort sub-haplotypes according to their frequency
 
 parser = argparse.ArgumentParser(description='Takes the output of ms(ms) as input. Calculates summary statistics on sliding windows (width+step). Can calculate these statistics over several nRep replicates, for each of the nCombParam parameter combinations. Output files have root name root.')
 
@@ -375,6 +376,35 @@ def sort_rows(haplotypes):
 		res += '\n'.join(haplo_tmp*nHaplo_tmp) + '\n'
 	return(res)
 
+def sort_rows_windows(haplotypes, nSNPs):
+	aln = {}
+	aln2 = {}
+	L = len(haplotypes[0])
+
+	nWindows = -1
+	for pos_start in range(0, L, nSNPs):
+		nWindows += 1
+		aln[nWindows] = []
+		aln2[nWindows] = []
+		
+		for hap_tmp in haplotypes:
+			aln[nWindows].append(hap_tmp[pos_start:(pos_start+nSNPs)])
+
+		# sort windows by frequency and then by count of '1's
+		haploCount = Counter(aln[nWindows])
+		sorted_haplos = sorted(haploCount.items(), key=lambda x: (-x[1], x[0].count('1')))
+		
+		for haplo_i, count in sorted_haplos:
+			aln2[nWindows] += [haplo_i] * count
+
+	# associate the different haplotypes
+	res = ''
+	for ind_i in range(len(haplotypes)):
+		for win_i in range(nWindows+1):
+			res += aln2[win_i][ind_i]
+		res += '\n'
+	return res
+
 def haploStats(haplotypes, bins, positions, width, min_width):
 	# haplotypes : list with all chromosomes
 	# bins: dictionnary with coordinates (start/end) of each bin between 0 (first position of the chromosome) and 1 (last position of the chromosome)
@@ -697,7 +727,8 @@ outfile.close()
 
 # sorted rows
 for tmp_i in totalData:
-	sorted_rows = sort_rows(totalData[tmp_i]['haplotypes'])
+#	sorted_rows = sort_rows(totalData[tmp_i]['haplotypes'])
+	sorted_rows = sort_rows_windows(haplotypes=totalData[tmp_i]['haplotypes'], nSNPs=width_sort)
 
 	outfile = open('{0}_{1}_sorted_rows.txt'.format(rootOutputFileName, tmp_i), 'w')
 	res = '{positions}\n{haplotypes}'.format(positions=' '.join([str(i) for i in totalData[tmp_i]['positions']]), haplotypes=sorted_rows)
