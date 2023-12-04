@@ -17,14 +17,14 @@ parser.add_argument('--model', type=str, default='EXP', help='Demographic model 
 parser.add_argument('-n', type=int, default=40, help='Number of sampled gametes (default: %(default)s)')
 parser.add_argument('-S', type=int, default=2000, help='Number of segregating sites (default: %(default)s)')
 parser.add_argument('-L', type=int, default=100000, help='Length of the chromosome in nucleotides (default: %(default)s)')
-parser.add_argument('-r', type=float, default=1e-8, help='Local recombination rate /bp/gen (default: %(default)s)')
-parser.add_argument('-fA', type=float, default=0.05, help='Frequency of the selected allele when selection begins (default: %(default)s)')
+parser.add_argument('-r', type=float, default=1e-6, help='Local recombination rate /bp/gen (default: %(default)s)')
+parser.add_argument('-fA', type=float, default=0.01, help='Frequency of the selected allele when selection begins (default: %(default)s)')
 parser.add_argument('-m', type=float, default=0.4, help='Migration rate from pop1 to pop2 backward in time (4.N.m) (default: %(default)s)')
 parser.add_argument('--width', type=float, default=0.05, help='Width of sliding window (default: %(default)s)')
 parser.add_argument('--step', type=float, default=0.025, help='Sliding window step (default: %(default)s)')
 
-parser.add_argument('--min_N', type=int, default=500, help='Minimum number of individuals (PRIOR_min) (default: %(default)s)')
-parser.add_argument('--max_N', type=int, default=50000, help='Maximum number of individuals (PRIOR_max) (default: %(default)s)')
+parser.add_argument('--min_N', type=int, default=100, help='Minimum number of individuals (PRIOR_min) (default: %(default)s)')
+parser.add_argument('--max_N', type=int, default=10000, help='Maximum number of individuals (PRIOR_max) (default: %(default)s)')
 #parser.add_argument('--min_T', type=int, default=1000, help='Minimum time of split in generations(PRIOR_min) (default: %(default)s)')
 #parser.add_argument('--max_T', type=int, default=500000, help='Maximum time of split in generations(PRIOR_max) (default: %(default)s)')
 parser.add_argument('--min_Ns', type=int, default=10, help='Minimum value for N.s (PRIOR_min) (default: %(default)s)')
@@ -73,7 +73,9 @@ def define_parameters(model, min_N, max_N, min_Ns, max_Ns, scalar_Tsplit_min, sc
 	Ns_sampled = random.uniform(min_Ns, max_Ns)
 	scalar_T_split = random.uniform(scalar_Tsplit_min, scalar_Tsplit_max)
 	scalar_T_dem = random.uniform(scalar_Tevent_min, scalar_Tevent_max)
-	scalar_T_selection = random.uniform(scalar_Tevent_min, scalar_Tevent_max)
+	
+#	scalar_T_selection = random.uniform(scalar_Tevent_min, scalar_Tevent_max)
+	scalar_T_selection = random.uniform(0.2, 16)
 
 	# Position of the selected site in nucleotides between 1 and L
 	Sp = random.randint(1, L)
@@ -123,7 +125,7 @@ while return_code != 0 or tested_trajectory != 1:
 	Nc, Na, Tsplit, Tdem, Tselection, s, Sp = define_parameters(args.model, args.min_N, args.max_N, args.min_Ns, args.max_Ns, args.scalar_Tsplit_min, args.scalar_Tsplit_max, args.scalar_Tevent_min, args.scalar_Tevent_max, args.L, args.scalar_N_min, args.scalar_N_max)
 
 	# command line for the simulation
-	commande = 'python3 {binpath}/pipeline_msms.py  --outfile {outfile} --n {n} --S {S} --r {r} --L {L} --Sp {Sp} --s {s} --fA {fA} --Nc {Nc} --Na {Na} --Ts {Tsplit} --Td {Tdem} --Tsel {Tselection} --m {m} --width {width} --step {step}'.format(
+	commande = 'python3 {binpath}/pipeline_msms.py  --outfile {outfile}_sweep --n {n} --S {S} --r {r} --L {L} --Sp {Sp} --s {s} --fA {fA} --Nc {Nc} --Na {Na} --Ts {Tsplit} --Td {Tdem} --Tsel {Tselection} --m {m} --width {width} --step {step}; python3 {binpath}/pipeline_msms.py  --outfile {outfile}_neutral --n {n} --S {S} --r {r} --L {L} --Sp {Sp} --s 0 --fA 0 --Nc {Nc} --Na {Na} --Ts {Tsplit} --Td {Tdem} --Tsel {Tselection} --m {m} --width {width} --step {step}'.format(
 		binpath=binpath, outfile=args.outfile,
 		n=args.n, S=args.S, r=args.r, L=args.L, fA=args.fA,
 		m=args.m,
@@ -134,7 +136,7 @@ while return_code != 0 or tested_trajectory != 1:
 	# if the program has not crashed
 	if return_code == 0:
 		# tests whether the selected allele has reached a high frequency
-		tested_trajectory, T_25, T_50, T_75, T_99 = test_trajectory(args.outfile, threshold, Nc)
+		tested_trajectory, T_25, T_50, T_75, T_99 = test_trajectory(args.outfile + '_sweep', threshold, Nc)
 		parameters = 'model\tN_current\tN_ancestral\tT_split\tT_demography\tT_selection\tT_freq25\tT_freq50\tT_freq75\tT_freq99\tmigration\tchromosome_length\tposition_selected_allele\tselective_coefficient_s\n'
 		parameters += '{model}\t{N_current}\t{N_ancestral}\t{T_split}\t{T_demography}\t{T_selection}\t{T_freq25}\t{T_freq50}\t{T_freq75}\t{T_freq99}\t{migration}\t{chromosome_length}\t{position_selected_allele}\t{selective_coefficient_s}\n'.format(
 		model=args.model, N_current=Nc, N_ancestral=Na, T_split=Tsplit, T_demography=Tdem,
