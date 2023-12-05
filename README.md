@@ -84,11 +84,11 @@ done
 In the _example_ subdirectory:  
 ```
 # go through all simulated datasets a first time, in order to get the range of variation for each stat : getAllData=1  
-python3 ../scripts/sim2box_single_YOLOv5.py dpi=300 datapath=$PWD simulation=100 object=posSelection theta=0 phasing=1 plotStats=0 getAllData=1 modelSim=both &
+python3 ../scripts/sim2box_single_YOLOv5.py dpi=300 datapath=$PWD simulation=100 object=posSelection theta=0 phasing=1 plotStats=0 getAllData=1 modelSim=both target_res=512 &
 
 # can then be run independently for all simulated datasets: getAllData=0  
 for iteration in $(ls *.ms | cut -d "." -f1 | sed "s/_neutral//g" | sed "s/_sweep//g" | sort | uniq); do
-	python3 ../scripts/sim2box_single_YOLOv5.py dpi=300 datapath=$PWD simulation=${iteration} object=posSelection theta=0 phasing=1 plotStats=0 getAllData=0 modelSim=both &
+	python3 ../scripts/sim2box_single_YOLOv5.py dpi=300 datapath=$PWD simulation=${iteration} object=posSelection theta=0 phasing=1 plotStats=0 getAllData=0 modelSim=both target_res=512 &
 done
 ```
 **phasing**: to specify whether the data where phased or not. For phased data (*phasing=1*): statistics relative to LD are computed (*nHaplotypes, H1, H2, H12, H2 over H1, D, r2*).   

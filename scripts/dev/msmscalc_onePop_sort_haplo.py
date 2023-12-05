@@ -730,7 +730,7 @@ for tmp_i in totalData:
 #	sorted_rows = sort_rows(totalData[tmp_i]['haplotypes'])
 	sorted_rows = sort_rows_windows(haplotypes=totalData[tmp_i]['haplotypes'], nSNPs=width_sort)
 
-	outfile = open('{0}_{1}_sorted_rows.txt'.format(rootOutputFileName, tmp_i), 'w')
+	outfile = open('{0}_{1}_sorted_rows.msms'.format(rootOutputFileName, tmp_i), 'w')
 	res = '{positions}\n{haplotypes}'.format(positions=' '.join([str(i) for i in totalData[tmp_i]['positions']]), haplotypes=sorted_rows)
 	outfile.write(res)
 	outfile.close()

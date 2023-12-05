@@ -146,3 +146,13 @@ while return_code != 0 or tested_trajectory != 1:
 		with open('{outfile}.prior'.format(outfile=args.outfile), "w") as infile:
 			infile.write(parameters)
 
+		# produce PNG files		
+		commande = 'python3 {binpath}/plot_rawData.py --input {outfile}_neutral_0_sorted_rows.msms --output {outfile}_neutral_0_sorted_rows.png -n {n} -S {S}; python3 {binpath}/plot_rawData.py --input {outfile}_sweep_0_sorted_rows.msms --output {outfile}_sweep_0_sorted_rows.png -n {n} -S {S}'.format(binpath=binpath, outfile=args.outfile, n=args.n, S=args.S)
+		print(commande)
+		os.system(commande)
+		
+		# clean space on hard drive
+		commande = 'rm {outfile}_*.msms {outfile}_*.trajectory'.format(outfile=args.outfile)
+		print(commande)
+		os.system(commande)
+
