@@ -1,0 +1,42 @@
+binpath=/shared/home/croux/softwares/deepDILS/scripts/dev
+# produce subdirectories, scripts to submit, and submit them
+for model in CST EXP BTL; do
+	for m in 0 0.2; do
+		./produce_directory.sh $model $m;
+	done;
+done
+
+### IMPORTANT ###
+# All parameters of the simulations, are required by launch_pipeline_msms.py
+# The script produce_directory.sh provides these parameters
+# So don't forget to set parameters values in the produce_directory.sh file
+### IMPORTANT ###
+
+
+#################
+
+
+# get all parameters within different subdirectories
+for i in $(ls *.sh | grep "-" | cut -d'.' -f1); do echo ${i};
+	sbatch --wrap="python3 ${binpath}/table_globale_prior.py ${i} ${i}_prior.txt"
+done
+
+# get all sumStats within different subdirectories
+for i in $(ls *.sh | grep "-" | cut -d'.' -f1); do echo ${i};
+	sbatch --wrap="python3 ${binpath}/table_globale_sumStats.py ${i} ${i}_sumStats.txt"
+done
+
+# convert sumStats from vector to matrix
+for i in $(ls *.sh | grep "-" | cut -d'.' -f1); do echo ${i};
+	sbatch --wrap="python3 ${binpath}/sumStats2matrix.py ${i}"
+done
+
+# get the minimum and maximum values for each line over all matrixes .mat
+# python3 ${binpath}/get_ranges.py ./ > all_ranges.txt
+sbatch --wrap="python3 ${binpath}/get_sumStats_ranges.py ./ >ranges.txt"
+
+# produce the bounding boxes
+for folder_i in $(find . -maxdepth 1 -type d -not -path "./res_ABC" -not -path "." -exec basename {} \;); do
+	sbatch --wrap="for simulation_i in \$(ls ${folder_i}/*.tar.gz | cut -d'_' -f1); do python3 ${binpath}/mat2png2bbox.py ranges.txt \${simulation_i}; done"
+done
+

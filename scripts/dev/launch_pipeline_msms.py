@@ -4,7 +4,8 @@ import argparse
 from math import isnan
 
 # pathway to the bin directory
-binpath = '/home/croux/Programmes/deepDILS/scripts/dev'
+#binpath = '/home/croux/Programmes/deepDILS/scripts/dev'
+binpath = '/shared/home/croux/softwares/deepDILS/scripts/dev'
 
 # threshold of the frequency of the selected allele. <threshold: restart simulation; else: retain the simulation
 threshold = 0.9
@@ -23,17 +24,17 @@ parser.add_argument('-m', type=float, default=0.4, help='Migration rate from pop
 parser.add_argument('--width', type=float, default=0.05, help='Width of sliding window (default: %(default)s)')
 parser.add_argument('--step', type=float, default=0.025, help='Sliding window step (default: %(default)s)')
 
-parser.add_argument('--min_N', type=int, default=100, help='Minimum number of individuals (PRIOR_min) (default: %(default)s)')
-parser.add_argument('--max_N', type=int, default=10000, help='Maximum number of individuals (PRIOR_max) (default: %(default)s)')
+parser.add_argument('--min_N', type=int, default=1000, help='Minimum number of individuals (PRIOR_min) (default: %(default)s)')
+parser.add_argument('--max_N', type=int, default=50000, help='Maximum number of individuals (PRIOR_max) (default: %(default)s)')
 #parser.add_argument('--min_T', type=int, default=1000, help='Minimum time of split in generations(PRIOR_min) (default: %(default)s)')
 #parser.add_argument('--max_T', type=int, default=500000, help='Maximum time of split in generations(PRIOR_max) (default: %(default)s)')
 parser.add_argument('--min_Ns', type=int, default=10, help='Minimum value for N.s (PRIOR_min) (default: %(default)s)')
 parser.add_argument('--max_Ns', type=int, default=100, help='Maximum value for N.s (PRIOR_max) (default: %(default)s)')
 parser.add_argument('--scalar_N_min', type=float, default=0.02, help='Minimum value for the ratio smallest Ne over bigger Ne (PRIOR_min) (default: %(default)s)')
 parser.add_argument('--scalar_N_max', type=float, default=0.2, help='Maximum value for the ratio smallest Ne over bigger Ne (PRIOR_max) (default: %(default)s)')
-parser.add_argument('--scalar_Tsplit_min', type=float, default=0.1, help='Minimum value for the ratio Tsplit over Ne_ancestral (PRIOR_min) (default: %(default)s)')
-parser.add_argument('--scalar_Tsplit_max', type=float, default=10, help='Maximum value for the ratio Tsplit over Ne_ancestral (PRIOR_max) (default: %(default)s)')
-parser.add_argument('--scalar_Tevent_min', type=float, default=0.2, help="Minimum value for the ratio Tevent over Tsplit (PRIOR_min). The event is 'demographic change' or 'selection start' (default: %(default)s)")
+parser.add_argument('--scalar_Tsplit_min', type=float, default=1, help='Minimum value for the ratio Tsplit over Ne_ancestral (PRIOR_min) (default: %(default)s)')
+parser.add_argument('--scalar_Tsplit_max', type=float, default=8, help='Maximum value for the ratio Tsplit over Ne_ancestral (PRIOR_max) (default: %(default)s)')
+parser.add_argument('--scalar_Tevent_min', type=float, default=0.05, help="Minimum value for the ratio Tevent over Tsplit (PRIOR_min). The event is 'demographic change' or 'selection start' (default: %(default)s)")
 parser.add_argument('--scalar_Tevent_max', type=float, default=0.5, help="Maximum value for the ratio Tevent over Tsplit (PRIOR_max). The event is 'demographic change' or 'selection start' (default: %(default)s)")
 
 # Get the arguments
@@ -74,8 +75,8 @@ def define_parameters(model, min_N, max_N, min_Ns, max_Ns, scalar_Tsplit_min, sc
 	scalar_T_split = random.uniform(scalar_Tsplit_min, scalar_Tsplit_max)
 	scalar_T_dem = random.uniform(scalar_Tevent_min, scalar_Tevent_max)
 	
-#	scalar_T_selection = random.uniform(scalar_Tevent_min, scalar_Tevent_max)
-	scalar_T_selection = random.uniform(0.2, 16)
+	scalar_T_selection = random.uniform(scalar_Tevent_min, scalar_Tevent_max)
+#	scalar_T_selection = random.uniform(0.2, 16)
 
 	# Position of the selected site in nucleotides between 1 and L
 	Sp = random.randint(1, L)
@@ -83,7 +84,7 @@ def define_parameters(model, min_N, max_N, min_Ns, max_Ns, scalar_Tsplit_min, sc
 	if model == 'CST':
 		Nc = N_sampled
 		Na = Nc
-		Tsplit = int(scalar_T_split * Na)
+		Tsplit = int(scalar_T_split * Nc)
 		Tdem = int(scalar_T_dem * Tsplit)
 		Tselection = int(scalar_T_selection * Tsplit)
 		# Selective coefficient of the allele A (1+2s; 1+s; 1)
@@ -93,7 +94,7 @@ def define_parameters(model, min_N, max_N, min_Ns, max_Ns, scalar_Tsplit_min, sc
 		scalar_N = random.uniform(scalar_N_min, scalar_N_max)
 		Na = N_sampled
 		Nc = int(Na * scalar_N)
-		Tsplit = int(scalar_T_split * Na)
+		Tsplit = int(scalar_T_split * Nc)
 		Tdem = int(scalar_T_dem * Tsplit)
 		Tselection = int(scalar_T_selection * Tsplit)
 		# Selective coefficient of the allele A (1+2s; 1+s; 1)
@@ -103,7 +104,7 @@ def define_parameters(model, min_N, max_N, min_Ns, max_Ns, scalar_Tsplit_min, sc
 		scalar_N = random.uniform(scalar_N_min, scalar_N_max)
 		Nc = N_sampled
 		Na = int(Nc * scalar_N)
-		Tsplit = int(scalar_T_split * Na)
+		Tsplit = int(scalar_T_split * Nc)
 		Tdem = int(scalar_T_dem * Tsplit)
 		Tselection = int(scalar_T_selection * Tsplit)
 		# Selective coefficient of the allele A (1+2s; 1+s; 1)
@@ -152,7 +153,7 @@ while return_code != 0 or tested_trajectory != 1:
 		os.system(commande)
 		
 		# clean space on hard drive
-		commande = 'rm {outfile}_*.msms {outfile}_*.trajectory'.format(outfile=args.outfile)
+		commande = 'tar -czvf {outfile}_archive_msms.tar.gz {outfile}_*.msms {outfile}_*.trajectory && rm {outfile}_*.msms {outfile}_*.trajectory'.format(outfile=args.outfile)
 		print(commande)
 		os.system(commande)
 

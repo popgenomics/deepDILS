@@ -2,7 +2,8 @@
 import os
 import argparse
 
-binpath = '/home/croux/Programmes/deepDILS/scripts/dev'
+#binpath = '/home/croux/Programmes/deepDILS/scripts/dev'
+binpath = '/shared/home/croux/softwares/deepDILS/scripts/dev'
 
 def run_simulation(outfile, n, S, r, L, Sp, s, fA, Nc, Na, m, Ts, Td, Tsel, width, step):
 	# simulations
