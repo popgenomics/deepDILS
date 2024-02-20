@@ -5,7 +5,8 @@ from math import isnan
 
 # pathway to the bin directory
 #binpath = '/home/croux/Programmes/deepDILS/scripts/dev'
-binpath = '/shared/home/croux/softwares/deepDILS/scripts/dev'
+#binpath = '/shared/home/croux/softwares/deepDILS/scripts/dev'
+binpath = '/home/camille.roux/softwares/deepDILS/scripts/dev'
 
 # threshold of the frequency of the selected allele. <threshold: restart simulation; else: retain the simulation
 threshold = 0.9
@@ -32,8 +33,8 @@ parser.add_argument('--min_Ns', type=int, default=10, help='Minimum value for N.
 parser.add_argument('--max_Ns', type=int, default=100, help='Maximum value for N.s (PRIOR_max) (default: %(default)s)')
 parser.add_argument('--scalar_N_min', type=float, default=0.02, help='Minimum value for the ratio smallest Ne over bigger Ne (PRIOR_min) (default: %(default)s)')
 parser.add_argument('--scalar_N_max', type=float, default=0.2, help='Maximum value for the ratio smallest Ne over bigger Ne (PRIOR_max) (default: %(default)s)')
-parser.add_argument('--scalar_Tsplit_min', type=float, default=1, help='Minimum value for the ratio Tsplit over Ne_ancestral (PRIOR_min) (default: %(default)s)')
-parser.add_argument('--scalar_Tsplit_max', type=float, default=8, help='Maximum value for the ratio Tsplit over Ne_ancestral (PRIOR_max) (default: %(default)s)')
+parser.add_argument('--scalar_Tsplit_min', type=float, default=1, help='Minimum value for the ratio Tsplit over Ne_current (PRIOR_min) (default: %(default)s)')
+parser.add_argument('--scalar_Tsplit_max', type=float, default=8, help='Maximum value for the ratio Tsplit over Ne_current (PRIOR_max) (default: %(default)s)')
 parser.add_argument('--scalar_Tevent_min', type=float, default=0.05, help="Minimum value for the ratio Tevent over Tsplit (PRIOR_min). The event is 'demographic change' or 'selection start' (default: %(default)s)")
 parser.add_argument('--scalar_Tevent_max', type=float, default=0.5, help="Maximum value for the ratio Tevent over Tsplit (PRIOR_max). The event is 'demographic change' or 'selection start' (default: %(default)s)")
 
